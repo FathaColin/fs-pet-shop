@@ -34,6 +34,31 @@ if ([pet.name, pet.kind, pet.age].includes(undefined)) {
 }
 })
 
+app.put('/pets/:id', (req, res) => {
+    const updatedPetData = req.body;
+    const index = parseInt(req.params.id);
+  
+    if (index >= 0 && index < pets.length) {
+      const updatedPet = pets[index];
+  
+      if ([updatedPetData.name, updatedPetData.kind, updatedPetData.age].includes(undefined)) {
+        res.status(400).send("Bad Request");
+      } else {
+        updatedPet.name = updatedPetData.name;
+        updatedPet.kind = updatedPetData.kind;
+        updatedPet.age = updatedPetData.age;
+  
+        fs.writeFileSync(petDatabase, JSON.stringify(pets));
+  
+        res.status(200).json(updatedPet);
+      }
+    } else {
+      res.status(404).send("Pet not found");
+    }
+  });
+
+  
+
 
 
 
