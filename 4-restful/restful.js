@@ -57,11 +57,18 @@ app.put('/pets/:id', (req, res) => {
     }
   });
 
+  app.delete('/pets/:id', (req, res) => {
+    const index = parseInt(req.params.id);
   
-
-
-
-
+    if (index >= 0 && index < pets.length) {
+      const deletedPet = pets.splice(index, 1);
+      fs.writeFileSync(petDatabase, JSON.stringify(pets));
+      res.status(200).json(deletedPet)
+  }else{
+    res.status(404).send("Pet not found")
+  }
+})
+  
 
 
 app.listen(PORT, () => {
