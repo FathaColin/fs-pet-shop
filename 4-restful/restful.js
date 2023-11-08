@@ -23,6 +23,16 @@ app.get('/pets/:id', (req, res) => {
     }
 });
 
+app.post('/pets', (req, res) => {
+const pet = req.body;
+if ([pet.name, pet.kind, pet.age].includes(undefined)) {
+    res.status(400).send("Bad Request");
+}else{
+    pets.push(pet);
+    fs.writeFileSync('../pets.json', JSON.stringify(pets))
+    res.status(201).json(pet);
+}
+})
 
 
 
