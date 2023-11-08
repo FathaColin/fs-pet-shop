@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 
-const petDatabase = "../pets.json"
+const petDatabase = '../pets.json';
 const petData = fs.readFileSync(petDatabase, 'utf8');
 let pets = JSON.parse(petData);
 
@@ -13,32 +13,40 @@ app.get('/pets', (req, res) => {
 });
 
 app.get('/pets/:id', (req, res) => {
-    const index = parseInt(req.params.id);
-    if (index >= 0 && index < pets.length) {
-        res.status(200).json(pets[index]);
-      } else {
+    const id = parseInt(req.params.id);
+    if (id >= 0 && id < pets.length) {
+        res.status(200).json(pets[id]);
+    } else {
         res.status(404).send('Not Found');
-}});
-
-app.post('/pets', (req,res) => {
-    const newPet = req.body;
-    
-    if(!isValidPet(newPet)) {
-        res.status(400).send('Bad Request');
-    }else{
-        pets.push(newPet);
     }
-    });
+});
+
+app.use(express.json());
+app.post('/pets', (req, res) => {
+    const newPet = req.body;
+
+    if (!isValidPet(newPet)) {
+        res.status(400).send('Bad Request');
+    } else {
+        pets.push(newPet);
+        fs.writeFileSync(petDatabase, JSON.stringify(pets, null, 2));
+        res.status(201).json(newPet);
+    }
+});
+
+app.use((req,res) => {
+    app.status(404).send('Not Found')
+})
 
 app.listen(PORT, () => {
-    console.log('server is running');
+    console.log('Server is running on port ' + PORT);
 });
 
 function isValidPet(newPet) {
     return (
-      newPet &&
-      typeof newPet.age === 'number' &&
-      typeof newPet.kind === 'string' &&
-      typeof newPet.name === 'string'
+        newPet &&
+        typeof newPet.age === 'number' &&
+        typeof newPet.kind === 'string' &&
+        typeof newPet.name === 'string'
     );
-  };
+}
