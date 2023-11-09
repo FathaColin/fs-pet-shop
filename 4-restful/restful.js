@@ -1,4 +1,4 @@
-import express from 'express';
+/*import express from 'express';
 import fs from 'fs';
 
 const PORT = 3000;
@@ -75,4 +75,5 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
 console.log(`Listening on port: ${PORT}`)
-});
+});*/
+
