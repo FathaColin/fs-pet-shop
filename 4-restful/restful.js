@@ -103,6 +103,20 @@ app.get('/pets', async (req, res) => {
   }
 })
 
+app.get('/pets/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const result = await pool.query(`SELECT * FROM pets WHERE id = ${id}`);
+
+    if (result.rows.length = 1) {
+      res.status(200).json(result.rows);
+    } else {
+      res.status(404).send('Not Found');
+    }
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`)
