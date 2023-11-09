@@ -88,7 +88,7 @@ const pool = new Pool({
   user: 'colin',
   host: 'localhost',
   database: 'petsdb',
-  password: '2211056',
+  password: '',
   port: 5432,
 })
 
@@ -96,8 +96,8 @@ app.use(express.json());
 
 app.get('/pets', async (req, res) => {
   try {
-    const all = await pool.query('SELECT * FROM pets');
-    res.status(200).json(all.rows);
+    const {rows} = await pool.query('SELECT * FROM pets');
+    res.status(200).json(rows);
   } catch (err) {
     res.status(500).send('Server Error');
   }
@@ -106,10 +106,10 @@ app.get('/pets', async (req, res) => {
 app.get('/pets/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const result = await pool.query(`SELECT * FROM pets WHERE id = ${id}`);
+    const {rows} = await pool.query(`SELECT * FROM pets WHERE id = ${id}`);
 
-    if (result.rows.length = 1) {
-      res.status(200).json(result.rows);
+    if (rows.length = 1) {
+      res.status(200).json(rows);
     } else {
       res.status(404).send('Not Found');
     }
@@ -118,7 +118,36 @@ app.get('/pets/:id', async (req, res) => {
   }
 });
 
+app.post('/pets', async (req, res) => {
+  const pet = req.body;
+  if ([pet.name, pet.kind, pet.age].includes(undefined)) {
+    res.status(400).send('Bad Request');
+  } else {
+    try {
+      const { rows } = await pool.query('INSERT INTO pets(name, kind, age) VALUES($1, $2, $3) RETURNING *', [
+        pet.name,
+        pet.kind,
+        pet.age,
+      ]);
+      res.status(201).json(rows[0]);
+    } catch (error) {
+      res.status(500).send('Internal Server Error');
+    }
+  }
+});
+
+
+
+
+
+
+
+
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`)
 })
 
+
+
+
+//app.use(express.static('__directory"))
