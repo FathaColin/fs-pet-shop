@@ -77,3 +77,34 @@ app.listen(PORT, () => {
 console.log(`Listening on port: ${PORT}`)
 });*/
 
+import express from 'express';
+import pg from 'pg'
+const { Pool } = pg;
+
+const PORT = 3000;
+const app = express();
+
+const pool = new Pool({
+  user: 'colin',
+  host: 'localhost',
+  database: 'petsdb',
+  password: '2211056',
+  port: 5432,
+})
+
+app.use(express.json());
+
+app.get('/pets', async (req, res) => {
+  try {
+    const all = await pool.query('SELECT * FROM pets');
+    res.status(200).json(all.rows);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+})
+
+
+app.listen(PORT, () => {
+  console.log(`Listening on port: ${PORT}`)
+})
+
