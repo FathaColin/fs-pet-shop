@@ -69,7 +69,9 @@ app.put('/pets/:id', (req, res) => {
   }
 })
   
-
+app.use((req, res) => {
+    res.status(404).send('Bad Request');
+})
 
 app.listen(PORT, () => {
 console.log(`Listening on port: ${PORT}`)
