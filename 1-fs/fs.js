@@ -24,7 +24,6 @@ function displayUsageAndExit(subcommand) {
     }
     process.exit(1);
   }
-  
 
 // Function to read the pets data from the file.
 function readPetsFile() {

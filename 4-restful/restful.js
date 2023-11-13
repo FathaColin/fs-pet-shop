@@ -136,18 +136,58 @@ app.post('/pets', async (req, res) => {
   }
 });
 
+app.put('/pets/:id', async (req, res) => {
+  const updatedPetData = req.body;
+  const index = parseInt(req.params.id);
 
+  if (index >= 0) {
+    try {
+      const result = await pool.query('UPDATE pets SET name = $1, kind = $2, age = $3 WHERE id = $4 RETURNING *', [
+        updatedPetData.name,
+        updatedPetData.kind,
+        updatedPetData.age,
+        index,
+      ]);
 
+      if (result.rows.length === 1) {
+        res.status(200).json(result.rows[0]);
+      } else {
+        res.status(404).send('Pet not found');
+      }
+    } catch (error) {
+      res.status(500).send('Internal Server Error');
+    }
+  } else {
+    res.status(400).send('Bad Request');
+  }
+});
 
+app.delete('/pets/:id', async (req, res) => {
+  const index = parseInt(req.params.id);
 
+  if (index >= 0) {
+    try {
+      const result = await pool.query('DELETE FROM pets WHERE id = $1 RETURNING *', [index]);
 
+      if (result.rows.length === 1) {
+        res.status(200).json(result.rows[0]);
+      } else {
+        res.status(404).send('Pet not found');
+      }
+    } catch (error) {
+      res.status(500).send('Internal Server Error');
+    }
+  } else {
+    res.status(400).send('Bad Request');
+  }
+});
 
+app.use((req, res) => {
+  res.status(404).send('Bad Request');
+});
 
 app.listen(PORT, () => {
-  console.log(`Listening on port: ${PORT}`)
-})
-
-
-
+  console.log(`Listening on port: ${PORT}`);
+});
 
 //app.use(express.static('__directory"))
